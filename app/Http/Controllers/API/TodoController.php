@@ -3,11 +3,17 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Todo\CreateRequest;
 use App\Models\Todo;
 use Illuminate\Http\Request;
 
 class TodoController extends Controller
 {
+    /**
+     * Get all todos
+     * 
+     * This endpoint retrieves all todos
+     */
     public function getAll()
     {
         $todos = Todo::all();
@@ -17,6 +23,12 @@ class TodoController extends Controller
         ]);
     }
 
+    /**
+     * Get one todo
+     * 
+     * This endpoint retrieves a single todo
+     * @param int $id The ID of the todo
+     */
     public function getOne($id)
     {
         $todo = Todo::find($id);
@@ -31,13 +43,15 @@ class TodoController extends Controller
         ]);
     }
 
-    public function create(Request $request)
+    /**
+     * Create a todo
+     * 
+     * This endpoint creates a new todo
+     * @param string $task_name The name of the task
+     * @param boolean $is_completed The completion status of the task
+     */
+    public function create(CreateRequest $request)
     {
-        $request->validate([
-            'task_name' => 'required',
-            'is_completed' => 'required|boolean'
-        ]);
-
         $todo = Todo::create($request->all());
         return response()->json([
             'message' => 'Todo created successfully',
@@ -45,7 +59,13 @@ class TodoController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, $id)
+    /**
+     * Update a todo
+     * 
+     * This endpoint updates a todo
+     * @param int $id The ID of the todo
+     */
+    public function update(CreateRequest $request, $id)
     {
         $todo = Todo::find($id);
         if (!$todo) {
@@ -53,12 +73,6 @@ class TodoController extends Controller
                 'message' => 'Todo not found',
             ], 404);
         }
-
-        $request->validate([
-            'task_name' => 'required',
-            'is_completed' => 'required|boolean'
-        ]);
-
 
         $todo->update($request->all());
         return response()->json([
